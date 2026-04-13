@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Container, Grid, TextField, Button, Box, Typography, Alert, CircularProgress } from "@mui/material";
 import GoogleIcon from '@mui/icons-material/Google';
 import AppleIcon from '@mui/icons-material/Apple';
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 const LoginPage = () => {

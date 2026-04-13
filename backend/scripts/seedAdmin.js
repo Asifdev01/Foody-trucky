@@ -10,18 +10,23 @@ const seedAdmin = async () => {
         process.exit(1);
     }
 
+    console.log("Attempting to connect to:", process.env.MONGODB_URI);
     await mongoose.connect(process.env.MONGODB_URI);
     console.log("📡 Connected to MongoDB for seeding...");
 
     const adminEmail = "admin@share2serve.com";
+    console.log("Checking for existing admin...");
     const adminExists = await User.findOne({ email: adminEmail });
     
     if (adminExists) {
       console.log(`ℹ️ Admin account (${adminEmail}) already exists.`);
-      process.exit(0);
+      console.log("Deleting old admin to create fresh one...");
+      await User.deleteOne({ email: adminEmail });
+      console.log("Old admin deleted.");
     }
 
-    await User.create({
+    console.log("Creating new admin user...");
+    const newAdmin = await User.create({
       name: "Admin User",
       email: adminEmail,
       password: "admin123", // The User model will hash this automatically
@@ -31,9 +36,13 @@ const seedAdmin = async () => {
     console.log(`✅ Admin account created successfully!`);
     console.log(`📧 Email: ${adminEmail}`);
     console.log(`🔑 Password: admin123`);
+    console.log(`🆔 ID: ${newAdmin._id}`);
+    
+    await mongoose.connection.close();
     process.exit(0);
   } catch (error) {
     console.error("❌ Error seeding admin:", error.message);
+    console.error("Full error:", error);
     process.exit(1);
   }
 };

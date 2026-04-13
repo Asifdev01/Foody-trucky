@@ -1,0 +1,195 @@
+/* Contact.css - Modern SaaS/Notion Style */
+
+.contact-container {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 0 20px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.contact-header {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.contact-header h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin-bottom: 10px;
+}
+
+.contact-header p {
+  color: #666;
+  font-size: 1.1rem;
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px;
+}
+
+/* Form Styles */
+.contact-form-card {
+  background: #ffffff;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f0f0f0;
+  transition: transform 0.3s ease;
+}
+
+.form-group {
+  margin-bottom: 24px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 600px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Support Issues List Section */
+.support-section {
+  margin-top: 60px;
+}
+
+.section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.section-title h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.issue-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+.issue-card {
+  background: #ffffff;
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  border: 1px solid #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.issue-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.06);
+}
+
+.issue-card.resolved {
+  border-left: 4px solid #4caf50;
+  background: #fcfdfc;
+}
+
+.issue-card.pending {
+  border-left: 4px solid #ff9800;
+  background: #fffdfb;
+}
+
+.issue-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.user-name {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #1a1a1a;
+}
+
+.user-contact {
+  font-size: 0.85rem;
+  color: #666;
+  display: flex;
+  gap: 12px;
+}
+
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-pending {
+  background: #fff4e5;
+  color: #b76e00;
+}
+
+.status-resolved {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.issue-body {
+  color: #444;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  background: #f9f9f9;
+  padding: 16px;
+  border-radius: 12px;
+}
+
+.issue-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  background: #fafafa;
+  border-radius: 20px;
+  border: 2px dashed #eee;
+  color: #888;
+}
+
+.empty-state-icon {
+  font-size: 3rem;
+  margin-bottom: 20px;
+  opacity: 0.5;
+}

@@ -1,44 +1,62 @@
 import React from "react";
-import { Card, CardContent, CardMedia, Typography } from "@mui/material";
+import { Card, CardContent, CardMedia, Typography, Box } from "@mui/material";
 import { styled } from "@mui/system";
 
-const StyledCard = styled(Card)({
-  maxWidth: 345,
+const StyledCard = styled(Card)(({ theme }) => ({
+  maxWidth: 360,
   margin: "auto",
-  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-  borderRadius: "12px",
-  transition: "transform 0.2s ease-in-out",
+  background: "rgba(255, 255, 255, 0.05)",
+  backdropFilter: "blur(10px)",
+  borderRadius: "24px",
+  border: "1px solid rgba(255, 255, 255, 0.1)",
+  transition: "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+  overflow: "hidden",
+  color: "#fff",
+  boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
   '&:hover': {
-    transform: "scale(1.05)",
-    mt:3,
-    overFlow: "hidden",
+    transform: "translateY(-12px)",
+    background: "rgba(255, 255, 255, 0.1)",
+    borderColor: "#3b82f6",
+    boxShadow: "0 20px 40px rgba(59, 130, 246, 0.2)",
+  },
+}));
+
+const StyledCardMedia = styled(CardMedia)({
+  height: 240,
+  transition: "transform 0.6s ease",
+  '&:hover': {
+    transform: "scale(1.1)",
   },
 });
 
-const StyledCardMedia = styled(CardMedia)({
-  height: 200,
-  borderRadius: "8px 8px 0 0",
-});
-
 const StyledCardContent = styled(CardContent)({
+  padding: "2rem",
   textAlign: "center",
+  background: "linear-gradient(to bottom, transparent, rgba(0,0,0,0.4))",
 });
 
 const StyledTypographyTitle = styled(Typography)({
-  fontSize: "1.5rem",
-  marginBottom: "0.8rem",
-  fontWeight: "bold",
+  fontFamily: "'Outfit', sans-serif",
+  fontSize: "1.6rem",
+  fontWeight: 700,
+  marginBottom: "1rem",
+  color: "#fff",
+  letterSpacing: "-0.02em",
 });
 
 const StyledTypographyBody = styled(Typography)({
+  fontFamily: "'Inter', sans-serif",
   fontSize: "1rem",
-  color: "#555",
+  lineHeight: "1.6",
+  color: "rgba(255, 255, 255, 0.7)",
 });
 
 const CustomCard = ({ image, title, body }) => {
   return (
     <StyledCard>
-      <StyledCardMedia component="img" image={image} alt={title} />
+      <Box sx={{ overflow: 'hidden' }}>
+        <StyledCardMedia component="img" image={image} alt={title} />
+      </Box>
       <StyledCardContent>
         <StyledTypographyTitle variant="h5">
           {title}
@@ -52,14 +70,19 @@ const CustomCard = ({ image, title, body }) => {
 };
 
 const CardGrid = ({ cards = []}) => {
- 
-
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "20px", padding: "20px" }}>
+    <Box sx={{ 
+      display: "grid", 
+      gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", 
+      gap: "40px", 
+      padding: "40px 20px",
+      maxWidth: "1400px",
+      margin: "0 auto"
+    }}>
       {cards.map((card, index) => (
         <CustomCard key={index} {...card} />
       ))}
-    </div>
+    </Box>
   );
 };
 

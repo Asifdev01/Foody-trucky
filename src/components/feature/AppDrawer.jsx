@@ -10,7 +10,7 @@ import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
 import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
 import ApartmentIcon from "@mui/icons-material/Apartment";
 import { DRAWER_WIDTH } from "../../constant/constant";
-import { useNavigate, Link } from "react-router";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 const AppDrawer = ({ HomeMenuItems }) => {

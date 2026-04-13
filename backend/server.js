@@ -4,6 +4,8 @@ const cors = require("cors");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const donorRoutes = require("./routes/donorRoutes");
+const foodDonationRoutes = require("./routes/foodDonationRoutes");
+const charityRoutes = require("./routes/charityRoutes");
 
 // Connect to Database
 connectDB();
@@ -36,6 +38,9 @@ app.use((req, res, next) => {
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/donors", donorRoutes);
+app.use("/api/food-donations", foodDonationRoutes);
+app.use("/api/charities", charityRoutes);
 
 // Health check
 app.get("/", (req, res) => {

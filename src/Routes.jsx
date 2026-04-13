@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Outlet } from "react-router";
+import { BrowserRouter as Router, Routes, Route, Outlet } from "react-router-dom";
 import { Box } from "@mui/material";
 
 // Components
@@ -12,6 +12,8 @@ import AdminRoute from "./components/AdminRoute";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
+import Donate from "./pages/Donate";
+import CharityNetwork from "./pages/CharityNetwork";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -54,6 +56,8 @@ const AppRoutes = () => {
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/donate" element={<Donate />} />
+          <Route path="/charities" element={<CharityNetwork />} />
         </Route>
 
         <Route path="/login" element={<Login />} />
