@@ -1,15 +1,24 @@
 const FoodDonation = require("../models/FoodDonation");
+const { getPagination, buildPaginationMeta } = require("../utils/pagination");
 
 // @desc    Get available food donations (public - for charities)
 // @route   GET /api/food-donations/available
 // @access  Public
 const getAvailableFoodDonations = async (req, res, next) => {
   try {
-    const donations = await FoodDonation.find({ status: { $in: ["Pending", "Accepted"] } }).sort({ createdAt: -1 });
-    res.status(200).json({ 
-      success: true, 
-      count: donations.length, 
-      data: donations 
+    const { page, limit, skip } = getPagination(req.query);
+    const filter = { status: { $in: ["Pending", "Accepted"] } };
+
+    const [donations, total] = await Promise.all([
+      FoodDonation.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit),
+      FoodDonation.countDocuments(filter),
+    ]);
+
+    res.status(200).json({
+      success: true,
+      count: donations.length,
+      data: donations,
+      pagination: buildPaginationMeta(page, limit, total),
     });
   } catch (error) {
     next(error);
@@ -21,11 +30,18 @@ const getAvailableFoodDonations = async (req, res, next) => {
 // @access  Private/Admin
 const getFoodDonations = async (req, res, next) => {
   try {
-    const donations = await FoodDonation.find({}).sort({ createdAt: -1 });
-    res.status(200).json({ 
-      success: true, 
-      count: donations.length, 
-      data: donations 
+    const { page, limit, skip } = getPagination(req.query);
+
+    const [donations, total] = await Promise.all([
+      FoodDonation.find({}).sort({ createdAt: -1 }).skip(skip).limit(limit),
+      FoodDonation.countDocuments({}),
+    ]);
+
+    res.status(200).json({
+      success: true,
+      count: donations.length,
+      data: donations,
+      pagination: buildPaginationMeta(page, limit, total),
     });
   } catch (error) {
     next(error);

@@ -24,10 +24,11 @@ import {
   Alert,
   CircularProgress,
   IconButton,
+  Skeleton,
 } from "@mui/material";
 import { Delete as DeleteIcon, Edit as EditIcon } from "@mui/icons-material";
-
-const API_URL = import.meta.env.VITE_API_URL;
+import { apiFetch } from "../../api/client";
+import StatusChip from "../../components/ui/StatusChip";
 
 const FoodDonor = () => {
   const [formData, setFormData] = useState({
@@ -61,12 +62,7 @@ const FoodDonor = () => {
   const fetchDonations = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem("token");
-      const response = await fetch(`${API_URL}/api/food-donations`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await apiFetch("/api/food-donations");
 
       if (!response.ok) throw new Error("Failed to fetch donations");
 
@@ -101,18 +97,11 @@ const FoodDonor = () => {
 
     try {
       setLoading(true);
-      const token = localStorage.getItem("token");
       const method = editingId ? "PUT" : "POST";
-      const url = editingId
-        ? `${API_URL}/api/food-donations/${editingId}`
-        : `${API_URL}/api/food-donations`;
+      const url = editingId ? `/api/food-donations/${editingId}` : "/api/food-donations";
 
-      const response = await fetch(url, {
+      const response = await apiFetch(url, {
         method,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
         body: JSON.stringify(formData),
       });
 
@@ -167,12 +156,8 @@ const FoodDonor = () => {
   const handleConfirmDelete = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem("token");
-      const response = await fetch(`${API_URL}/api/food-donations/${deleteId}`, {
+      const response = await apiFetch(`/api/food-donations/${deleteId}`, {
         method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
       });
 
       if (!response.ok) throw new Error("Failed to delete donation");
@@ -194,13 +179,8 @@ const FoodDonor = () => {
   const handleStatusChange = async (donationId, newStatus) => {
     try {
       setLoading(true);
-      const token = localStorage.getItem("token");
-      const response = await fetch(`${API_URL}/api/food-donations/${donationId}`, {
+      const response = await apiFetch(`/api/food-donations/${donationId}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
         body: JSON.stringify({ status: newStatus }),
       });
 
@@ -378,17 +358,20 @@ const FoodDonor = () => {
         </Typography>
 
         {loading && !editingId ? (
-          <Box sx={{ display: "flex", justifyContent: "center", py: 3 }}>
-            <CircularProgress />
+          <Box sx={{ py: 1 }}>
+            {[...Array(3)].map((_, i) => (
+              <Skeleton key={i} height={52} sx={{ my: 0.5 }} />
+            ))}
           </Box>
         ) : donations.length === 0 ? (
-          <Typography color="textSecondary" align="center" sx={{ py: 3 }}>
-            No food donations added yet. Add one above to get started!
-          </Typography>
+          <Box sx={{ textAlign: "center", py: 5 }}>
+            <Typography variant="h6" sx={{ mb: 0.5 }}>No food donations yet</Typography>
+            <Typography color="text.secondary">Add one above to get started!</Typography>
+          </Box>
         ) : (
           <TableContainer component={Paper}>
             <Table>
-              <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
+              <TableHead sx={{ backgroundColor: "background.default" }}>
                 <TableRow>
                   <TableCell sx={{ fontWeight: "bold" }}>Donor Name</TableCell>
                   <TableCell sx={{ fontWeight: "bold" }}>Email</TableCell>
@@ -414,6 +397,9 @@ const FoodDonor = () => {
                         <Select
                           value={donation.status}
                           onChange={(e) => handleStatusChange(donation._id, e.target.value)}
+                          renderValue={(value) => (
+                            <StatusChip status={value} sx={{ pointerEvents: "none" }} />
+                          )}
                         >
                           {statuses.map((status) => (
                             <MenuItem key={status} value={status}>

@@ -1,13 +1,16 @@
-import React, { useEffect } from 'react'
-import { Button, Typography, Box, Container, Grid } from '@mui/material'
+import React, { useEffect, useRef, useState } from 'react'
+import { Button, Typography, Box, Container, Grid, IconButton, Avatar } from '@mui/material'
+import { ChevronLeft, ChevronRight, LocalShipping, VerifiedUser } from '@mui/icons-material'
 import { useLocation } from 'react-router-dom'
 import './Home.css'
 import Cardd from '../Cardd'
-import MyButton from '../components/ui/MyButton'
+import CountUp from '../components/ui/CountUp'
+import AvatarStack from '../components/ui/AvatarStack'
+import CurveDivider from '../components/ui/CurveDivider'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
-const processCards = [
+const donorSteps = [
   {
     image: "/step1_donate.png",
     title: "1. Post Excess Food",
@@ -22,6 +25,24 @@ const processCards = [
     image: "/step3_pickup.png",
     title: "3. Direct Impact",
     body: "Volunteers and charities pick up the food to serve those in need, ensuring zero waste and maximum reach."
+  }
+];
+
+const charitySteps = [
+  {
+    image: "/feedingImg.jpg",
+    title: "1. Browse Donations",
+    body: "Charities browse available food donations nearby, filtered by type, quantity, and pickup window."
+  },
+  {
+    image: "/food3.jpg",
+    title: "2. Accept & Schedule",
+    body: "Accept a donation in one tap and coordinate a pickup time directly with the donor."
+  },
+  {
+    image: "/cta_bg.png",
+    title: "3. Distribute & Report",
+    body: "Distribute meals to your community and track your organization's growing impact over time."
   }
 ];
 
@@ -43,9 +64,38 @@ const impactCards = [
   }
 ];
 
+const trustBadges = [
+  { name: "Feeding Hope Foundation", color: "6C63FF" },
+  { name: "Robin Hood Army", color: "00C853" },
+  { name: "Annapurna Seva Trust", color: "FF6B6B" },
+  { name: "Akshaya Patra Foundation", color: "FF9100" },
+  { name: "Roti Bank India", color: "795548" },
+  { name: "No Food Waste", color: "2196F3" },
+];
+
+const testimonials = [
+  {
+    quote: "We used to throw away trays of untouched banquet food every weekend. Now it's picked up within the hour and we get a photo of the meal reaching families the same night.",
+    name: "Ravi Shah",
+    role: "Owner, Green Leaf Banquets",
+  },
+  {
+    quote: "The pickup requests are organized by distance and food type, so our volunteers aren't guessing anymore. We've doubled the number of families we serve each week.",
+    name: "Meera Nair",
+    role: "Coordinator, Annapurna Seva Trust",
+  },
+  {
+    quote: "Signing up took five minutes and our first donation was collected the same day. It's the easiest way I've found to make sure good food doesn't go to waste.",
+    name: "Arjun Mehta",
+    role: "Home donor",
+  },
+];
+
 function Home() {
-  const { token, user } = useAuth();
+  const { token } = useAuth();
   const { hash } = useLocation();
+  const [activeTrack, setActiveTrack] = useState("donor");
+  const trustScrollRef = useRef(null);
 
   useEffect(() => {
     if (hash) {
@@ -56,42 +106,160 @@ function Home() {
     }
   }, [hash]);
 
+  const scrollTrust = (direction) => {
+    trustScrollRef.current?.scrollBy({ left: direction * 320, behavior: 'smooth' });
+  };
+
   return (
     <div className="home-container">
       {/* Hero Section */}
       <section className="hero-section">
-        <img className="hero-img" src="/hero_premium.png" alt="Feeding community" />
-        <Box className="hero-overlay">
-          <Typography variant="h1" className="hero-title">
-            Donate Food,<br />Change Lives
-          </Typography>
-          <Typography className="hero-subtitle">
-            We connect businesses with local charities to rescue perfectly good food that would otherwise go to waste. Join the mission to end hunger and protect the planet.
-          </Typography>
-          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link to="/donate" style={{ textDecoration: 'none' }}>
-              <Button 
-                variant="contained" 
-                className="cta-button"
-                sx={{ 
-                  px: 4, py: 1.8, fontSize: '1.1rem',
-                  boxShadow: '0 8px 25px rgba(59, 130, 246, 0.4)'
-                }}
-              >
-                DONATE NOW
-              </Button>
-            </Link>
-            <Link to="/charities" style={{ textDecoration: 'none' }}>
-              <Button 
-                variant="outlined" 
-                className="logout-button"
-                sx={{ px: 4, py: 1.8, fontSize: '1.1rem' }}
-              >
-                EXPLORE PARTNERS
-              </Button>
-            </Link>
+        <div className="hero-grid">
+          <Box>
+            <div className="hero-badge">
+              <VerifiedUser sx={{ fontSize: 18 }} /> Verified Charity Network
+            </div>
+            <Typography className="hero-title" component="h1">
+              Turn Surplus Food Into <span className="accent">Real Meals</span>
+            </Typography>
+            <Typography className="hero-subtitle">
+              Share2serve connects restaurants, events, and households with local charities so surplus food
+              reaches people who need it — usually within hours, not days.
+            </Typography>
+            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 4 }}>
+              <Link to="/donate" style={{ textDecoration: 'none' }}>
+                <Button variant="contained" color="primary" size="large">
+                  Donate Now
+                </Button>
+              </Link>
+              <Link to="/charities" style={{ textDecoration: 'none' }}>
+                <Button variant="outlined" color="primary" size="large">
+                  Explore Charities
+                </Button>
+              </Link>
+            </Box>
+            <AvatarStack
+              avatars={[
+                { src: "https://i.pravatar.cc/64?img=12" },
+                { src: "https://i.pravatar.cc/64?img=32" },
+                { src: "https://i.pravatar.cc/64?img=45" },
+                { src: "https://i.pravatar.cc/64?img=8" },
+              ]}
+              label="142+ donors already on board"
+            />
           </Box>
-        </Box>
+
+          <div className="hero-image-wrap">
+            <div className="hero-image-blob" />
+            <img className="hero-img" src="/hero_premium.png" alt="Volunteers preparing rescued food" />
+            <div className="hero-floating-chip">
+              <div className="hero-floating-chip-icon">
+                <LocalShipping sx={{ color: '#7C9A3C', fontSize: 20 }} />
+              </div>
+              <div className="hero-floating-chip-text">
+                <strong>5,240 kg</strong>
+                food rescued this month
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <CurveDivider fill="#F3E9D8" />
+
+      {/* Stats Section */}
+      <section className="stats-section">
+        <div className="stats-grid">
+          <Box className="stat-card">
+            <CountUp end={5240} suffix=" kg" sx={{ color: '#E2672B' }} />
+            <div className="stat-label">Food Rescued</div>
+          </Box>
+          <Box className="stat-card">
+            <CountUp end={12800} suffix="+" sx={{ color: '#E2672B' }} />
+            <div className="stat-label">Meals Served</div>
+          </Box>
+          <Box className="stat-card">
+            <CountUp end={142} sx={{ color: '#E2672B' }} />
+            <div className="stat-label">Active Donors</div>
+          </Box>
+          <Box className="stat-card">
+            <CountUp end={85} suffix="+" sx={{ color: '#E2672B' }} />
+            <div className="stat-label">NGO Partners</div>
+          </Box>
+        </div>
+      </section>
+
+      {/* How it Works — dual track */}
+      <section className="how-it-works-section">
+        <Typography className="section-title">How it Works</Typography>
+        <Typography className="section-subtitle">
+          Whether you have food to give or a community to feed, getting started takes minutes.
+        </Typography>
+        <div className="track-tabs">
+          <button
+            className={`track-tab ${activeTrack === "donor" ? "active" : ""}`}
+            onClick={() => setActiveTrack("donor")}
+          >
+            For Donors
+          </button>
+          <button
+            className={`track-tab ${activeTrack === "charity" ? "active" : ""}`}
+            onClick={() => setActiveTrack("charity")}
+          >
+            For Charities
+          </button>
+        </div>
+        <Cardd cards={activeTrack === "donor" ? donorSteps : charitySteps} />
+      </section>
+
+      {/* Trust Strip */}
+      <section className="trust-section">
+        <div className="trust-header">
+          <Typography variant="h5" sx={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700 }}>
+            Trusted by these charities
+          </Typography>
+          <Box>
+            <IconButton onClick={() => scrollTrust(-1)} sx={{ bgcolor: '#fff', mr: 1 }}>
+              <ChevronLeft />
+            </IconButton>
+            <IconButton onClick={() => scrollTrust(1)} sx={{ bgcolor: '#fff' }}>
+              <ChevronRight />
+            </IconButton>
+          </Box>
+        </div>
+        <div className="trust-scroll" ref={trustScrollRef}>
+          {trustBadges.map((b) => (
+            <div className="trust-badge" key={b.name}>
+              <img
+                src={`https://ui-avatars.com/api/?name=${encodeURIComponent(b.name)}&background=${b.color}&color=fff&bold=true`}
+                alt={b.name}
+              />
+              <span>{b.name}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="testimonials-section">
+        <Typography className="section-title">What Our Community Says</Typography>
+        <Typography className="section-subtitle">
+          Real stories from the donors and charities using Share2serve every week.
+        </Typography>
+        <div className="testimonial-grid">
+          {testimonials.map((t) => (
+            <div className="testimonial-card" key={t.name}>
+              <Typography className="testimonial-quote">&ldquo;{t.quote}&rdquo;</Typography>
+              <div className="testimonial-author">
+                <Avatar sx={{ bgcolor: '#E2672B', fontWeight: 700 }}>{t.name.charAt(0)}</Avatar>
+                <Box>
+                  <div className="testimonial-author-name">{t.name}</div>
+                  <div className="testimonial-author-role">{t.role}</div>
+                </Box>
+              </div>
+            </div>
+          ))}
+        </div>
       </section>
 
       {/* About Us Section */}
@@ -99,7 +267,7 @@ function Home() {
         <Container maxWidth="lg">
           <Grid container spacing={6} alignItems="center">
             <Grid item xs={12} md={6}>
-              <Box className="about-content-box">
+              <Box>
                 <Typography variant="overline" className="about-subtitle">WHO WE ARE</Typography>
                 <Typography variant="h2" className="about-title">Our Mission & Purpose</Typography>
                 <Typography className="about-text">
@@ -130,70 +298,33 @@ function Home() {
         </Container>
       </section>
 
-      {/* Stats Section */}
-      <section className="stats-section">
-        <div className="stats-grid">
-          <div className="stat-item">
-            <div className="stat-value">5,240 kg</div>
-            <div className="stat-label">Food Rescued</div>
-          </div>
-          <div className="stat-item">
-            <div className="stat-value">12,800+</div>
-            <div className="stat-label">Meals Served</div>
-          </div>
-          <div className="stat-item">
-            <div className="stat-value">142</div>
-            <div className="stat-label">Active Donors</div>
-          </div>
-          <div className="stat-item">
-            <div className="stat-value">85+</div>
-            <div className="stat-label">NGO Partners</div>
-          </div>
-        </div>
-      </section>
-
       {/* Auth Call-to-action */}
       {!token && (
-        <Container maxWidth="md" sx={{ my: 10 }}>
-          <Box sx={{ 
-            p: 5, textAlign: 'center', background: 'rgba(255,255,255,0.03)', 
-            borderRadius: '30px', border: '1px solid rgba(255,255,255,0.1)'
+        <Container maxWidth="md" sx={{ mb: 10 }}>
+          <Box sx={{
+            p: 5, textAlign: 'center', background: '#fff',
+            borderRadius: '30px', border: '1px solid rgba(36,31,27,0.08)',
+            boxShadow: '0 8px 32px rgba(36,31,27,0.06)',
           }}>
             <Typography variant="h4" sx={{ mb: 2, fontWeight: 700, fontFamily: 'Outfit' }}>
               Want to make an impact?
             </Typography>
-            <Typography sx={{ mb: 4, color: 'rgba(255,255,255,0.7)' }}>
+            <Typography sx={{ mb: 4, color: '#6B6259' }}>
               Sign up today to join our network of donors and charities. It only takes a minute to start saving lives.
             </Typography>
             <Link to="/signup" style={{ textDecoration: 'none' }}>
-              <Button variant="contained" className="cta-button">Join the Network</Button>
+              <Button variant="contained" color="primary" size="large">Join the Network</Button>
             </Link>
           </Box>
         </Container>
       )}
 
-      {/* Process Section */}
-      <section>
-        <Typography variant="h2" className="section-title">How it Works</Typography>
-        <Cardd cards={processCards} />
-      </section>
-
-      {/* Impact Facts Section */}
-      <section className="impact-facts">
-        <div className="facts-content">
-          <div className="facts-title">A CLEAR SOLUTION</div>
-          <Typography variant="h3" className="facts-main-text">
-            Bridging the gap between excess and need.
-          </Typography>
-          <Typography className="facts-sub-text">
-            Share2serve connects hospitality and food service organizations with excess food by simplifying the process of locating, verifying, and transporting these resources. 
-            We turn potential waste into a powerful tool for social good.
-          </Typography>
-        </div>
-      </section>
-
       {/* More impact cards */}
       <section style={{ paddingBottom: '100px' }}>
+        <Typography className="section-title">Beyond the Plate</Typography>
+        <Typography className="section-subtitle">
+          Every donation creates ripple effects far beyond a single meal.
+        </Typography>
         <Cardd cards={impactCards} />
       </section>
     </div>

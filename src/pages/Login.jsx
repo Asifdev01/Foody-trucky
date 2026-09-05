@@ -1,28 +1,37 @@
 import React, { useState } from "react";
-import { Container, Grid, TextField, Button, Box, Typography, Alert, CircularProgress } from "@mui/material";
+import { Grid, TextField, Button, Box, Typography, Alert, CircularProgress, Divider } from "@mui/material";
 import GoogleIcon from '@mui/icons-material/Google';
 import AppleIcon from '@mui/icons-material/Apple';
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { apiFetch } from "../api/client";
+
+const isValidEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [touched, setTouched] = useState({});
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  
+
   const { login } = useAuth();
   const navigate = useNavigate();
 
+  const emailError = touched.email && !isValidEmail(email) ? "Enter a valid email address" : "";
+  const passwordError = touched.password && !password ? "Password is required" : "";
+
   const handleLogin = async (e) => {
     e.preventDefault();
+    setTouched({ email: true, password: true });
     setError("");
-    setLoading(true);
 
+    if (!isValidEmail(email) || !password) return;
+
+    setLoading(true);
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/auth/login`, {
+      const response = await apiFetch("/api/auth/login", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
@@ -32,7 +41,7 @@ const LoginPage = () => {
         throw new Error(data.message || "Login failed");
       }
 
-      login(data.user, data.token);
+      login(data.user, data.token, data.refreshToken);
       navigate("/");
     } catch (err) {
       setError(err.message);
@@ -42,75 +51,109 @@ const LoginPage = () => {
   };
 
   return (
-    <Container maxWidth={false} disableGutters sx={{ height: "100vh", display: "flex" }}>
-      <Grid container sx={{ flex: 1 }}>
-        <Grid item xs={12} md={6} sx={{ display: { xs: "none", md: "flex" }, alignItems: "center", justifyContent: "center", backgroundImage: "url(/food3.jpg)", backgroundSize: "cover", backgroundPosition: "center" }}></Grid>
+    <Grid container sx={{ minHeight: "calc(100vh - 64px)" }}>
+      {/* Illustrative panel */}
+      <Grid
+        item xs={12} md={6}
+        sx={{
+          display: { xs: "none", md: "flex" },
+          alignItems: "flex-end",
+          position: "relative",
+          backgroundImage: "url(/food3.jpg)",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          p: 6,
+        }}
+      >
+        <Box sx={{
+          position: "absolute", inset: 0,
+          background: "linear-gradient(to top, rgba(36,31,27,0.75), rgba(36,31,27,0.05))",
+        }} />
+        <Box sx={{ position: "relative", color: "#fff" }}>
+          <Typography variant="h4" sx={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, mb: 1 }}>
+            Every meal starts with someone who cares.
+          </Typography>
+          <Typography sx={{ opacity: 0.85 }}>
+            Log in to track your donations and see the impact you're making.
+          </Typography>
+        </Box>
+      </Grid>
 
-        <Grid item xs={12} md={6} sx={{ display: "flex", alignItems: "center", justifyContent: "center", padding: 3 }}>
-          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: 360 }}>
-            <Typography variant="h6" component="a" href="/" sx={{ mb: 4, fontFamily: "Kaushan Script, serif", fontWeight: 500, fontSize: '3rem', color: 'black', textDecoration: 'none' }}>
-              Share2serve
+      {/* Form panel */}
+      <Grid item xs={12} md={6} sx={{ display: "flex", alignItems: "center", justifyContent: "center", p: 3 }}>
+        <Box sx={{ width: "100%", maxWidth: 380 }}>
+          <Typography
+            component={Link} to="/"
+            sx={{
+              display: "block", mb: 4, fontFamily: "'Outfit', sans-serif", fontWeight: 800,
+              fontSize: "1.75rem", color: "text.primary", textDecoration: "none",
+            }}
+          >
+            Share<span style={{ color: "#E2672B" }}>2</span>serve
+          </Typography>
+
+          <Typography variant="h4" gutterBottom sx={{ fontWeight: 700 }}>Welcome back</Typography>
+          <Typography sx={{ color: "text.secondary", mb: 3 }}>Log in to continue making an impact.</Typography>
+
+          {error && (
+            <Alert severity="error" variant="filled" sx={{ mb: 2 }}>
+              {error}
+            </Alert>
+          )}
+
+          <form onSubmit={handleLogin} noValidate>
+            <TextField
+              label="Email" fullWidth margin="normal"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              onBlur={() => setTouched((t) => ({ ...t, email: true }))}
+              error={!!emailError}
+              helperText={emailError}
+            />
+            <TextField
+              label="Password" type="password" fullWidth margin="normal"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              onBlur={() => setTouched((t) => ({ ...t, password: true }))}
+              error={!!passwordError}
+              helperText={passwordError}
+            />
+
+            <Typography sx={{ cursor: "pointer", fontSize: "0.8rem", textAlign: "right", color: "text.secondary", mt: 1 }}>
+              forgot password?
             </Typography>
 
-            <Typography variant="h4" gutterBottom>Login</Typography>
+            <Button
+              type="submit" variant="contained" color="primary" fullWidth
+              disabled={loading}
+              sx={{ mt: 3, py: 1.3 }}
+            >
+              {loading ? <CircularProgress size={24} color="inherit" /> : "Login"}
+            </Button>
+          </form>
 
-            {error && <Alert severity="error" sx={{ width: '100%', mb: 2 }}>{error}</Alert>}
-
-            <form onSubmit={handleLogin} style={{ width: '100%' }}>
-              <TextField 
-                label="Email" 
-                fullWidth 
-                margin="normal" 
-                value={email} 
-                onChange={(e) => setEmail(e.target.value)} 
-                required 
-              />
-              <TextField 
-                label="Password" 
-                type="password" 
-                fullWidth 
-                margin="normal" 
-                value={password} 
-                onChange={(e) => setPassword(e.target.value)} 
-                required 
-              />
-              
-              <Typography sx={{ cursor: "pointer", fontSize: "0.8rem", textAlign: "right", color: "gray" }}>
-                forgot password?
-              </Typography>
-
-              <Button 
-                type="submit" 
-                variant="contained" 
-                fullWidth 
-                disabled={loading}
-                sx={{ mt: 4, bgcolor: "#87A920", padding: "10px 20px", "&:hover": { bgcolor: "#6e8f1a" } }}
-              >
-                {loading ? <CircularProgress size={24} color="inherit" /> : "Login"}
-              </Button>
-            </form>
-
-            <Box sx={{ mt: 3, textAlign: "center" }}>
-              <Typography variant="body2">
-                Don't have an account? 
-                <Link style={{ textDecoration: "none", marginLeft: '5px', color: '#87A920' }} to="/signup">Sign up</Link>
-              </Typography>
-            </Box>
-
-            <Typography sx={{ mt: 3, fontSize: "0.8rem", opacity: "0.5" }}>or Login with</Typography>
-
-            <Box sx={{ mt: 2, display: "flex", gap: 2 }}>
-              <Button variant="outlined" sx={{ borderRadius: "20px", color: "black", borderColor: "#87A920" }}>
-                <GoogleIcon />
-              </Button>
-              <Button variant="outlined" sx={{ borderRadius: "20px", color: "black", borderColor: "#87A920" }}>
-                <AppleIcon />
-              </Button>
-            </Box>
+          <Box sx={{ mt: 3, textAlign: "center" }}>
+            <Typography variant="body2" color="text.secondary">
+              Don't have an account?{" "}
+              <Link style={{ color: "#E2672B", fontWeight: 600 }} to="/signup">Sign up</Link>
+            </Typography>
           </Box>
-        </Grid>
+
+          <Divider sx={{ my: 3 }}>
+            <Typography variant="caption" color="text.secondary">or continue with</Typography>
+          </Divider>
+
+          <Box sx={{ display: "flex", gap: 1.5 }}>
+            <Button fullWidth variant="outlined" color="inherit" startIcon={<GoogleIcon />} sx={{ borderColor: "divider" }}>
+              Google
+            </Button>
+            <Button fullWidth variant="outlined" color="inherit" startIcon={<AppleIcon />} sx={{ borderColor: "divider" }}>
+              Apple
+            </Button>
+          </Box>
+        </Box>
       </Grid>
-    </Container>
+    </Grid>
   );
 };
 

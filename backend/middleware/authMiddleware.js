@@ -17,8 +17,12 @@ const protect = (req, res, next) => {
     req.user = decoded; // { id, name, email, role }
     next();
   } catch (error) {
-    console.warn("⚠️ Invalid JWT:", error.message);
-    return res.status(401).json({ success: false, message: "Not authorized, token invalid or expired" });
+    const isExpired = error.name === "TokenExpiredError";
+    return res.status(401).json({
+      success: false,
+      message: isExpired ? "Access token expired" : "Not authorized, token invalid",
+      code: isExpired ? "TOKEN_EXPIRED" : "TOKEN_INVALID",
+    });
   }
 };
 

@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Box, CircularProgress, Alert } from "@mui/material";
+import {
+  Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
+  Box, Alert, Chip, Skeleton,
+} from "@mui/material";
+import { PeopleOutline } from "@mui/icons-material";
 import { useAuth } from "../../context/AuthContext";
+import { apiFetch } from "../../api/client";
 
 const Donor = () => {
   const [donors, setDonors] = useState([]);
@@ -11,12 +16,7 @@ const Donor = () => {
   useEffect(() => {
     const fetchDonors = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/donors`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
+        const response = await apiFetch("/api/donors");
         const data = await response.json();
 
         if (!response.ok) {
@@ -36,45 +36,55 @@ const Donor = () => {
     }
   }, [token]);
 
-  if (loading) {
-    return (
-      <Box sx={{ display: "flex", justifyContent: "center", mt: 5 }}>
-        <CircularProgress color="inherit" />
-      </Box>
-    );
-  }
-
   return (
     <Box>
-      <Typography variant="h4" gutterBottom>Donors List</Typography>
-      
+      <Typography variant="h4" gutterBottom sx={{ fontWeight: 700 }}>Donors List</Typography>
+
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
-            <TableRow sx={{ bgcolor: "#87A920" }}>
-              <TableCell sx={{ color: "white" }}>ID</TableCell>
-              <TableCell sx={{ color: "white" }}>Name</TableCell>
-              <TableCell sx={{ color: "white" }}>Email</TableCell>
-              <TableCell sx={{ color: "white" }}>Type</TableCell>
-              <TableCell sx={{ color: "white" }}>Status</TableCell>
+            <TableRow sx={{ bgcolor: "background.default" }}>
+              <TableCell sx={{ fontWeight: 700 }}>Name</TableCell>
+              <TableCell sx={{ fontWeight: 700 }}>Email</TableCell>
+              <TableCell sx={{ fontWeight: 700 }}>Type</TableCell>
+              <TableCell sx={{ fontWeight: 700 }}>Status</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {donors.length > 0 ? (
+            {loading ? (
+              [...Array(4)].map((_, i) => (
+                <TableRow key={i}>
+                  {[...Array(4)].map((__, j) => (
+                    <TableCell key={j}><Skeleton /></TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : donors.length > 0 ? (
               donors.map((row) => (
-                <TableRow key={row._id}>
-                  <TableCell>{row._id.substring(0, 8)}...</TableCell>
+                <TableRow key={row._id} hover>
                   <TableCell>{row.name}</TableCell>
                   <TableCell>{row.email}</TableCell>
                   <TableCell>{row.type}</TableCell>
-                  <TableCell>{row.status}</TableCell>
+                  <TableCell>
+                    <Chip
+                      label={row.status}
+                      size="small"
+                      color={row.status === "Active" ? "success" : "default"}
+                      variant="outlined"
+                    />
+                  </TableCell>
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={5} align="center">No donors found</TableCell>
+                <TableCell colSpan={4}>
+                  <Box sx={{ textAlign: "center", py: 6 }}>
+                    <PeopleOutline sx={{ fontSize: 48, color: "text.secondary", mb: 1 }} />
+                    <Typography color="text.secondary">No donors yet</Typography>
+                  </Box>
+                </TableCell>
               </TableRow>
             )}
           </TableBody>

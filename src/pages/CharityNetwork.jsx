@@ -942,38 +942,38 @@ const CharityNetwork = () => {
                 <Grid item xs={12} sm={6}>
                   <TextField fullWidth label="Organization Name" name="name" required
                     value={regForm.name} onChange={handleRegChange}
-                    InputProps={{ startAdornment: <InputAdornment position="start"><FoodBankIcon sx={{ color: "#6C63FF" }} /></InputAdornment> }} />
+                    InputProps={{ startAdornment: <InputAdornment position="start"><FoodBankIcon sx={{ color: "#E2672B" }} /></InputAdornment> }} />
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField fullWidth label="Registration Number" name="regNumber"
                     value={regForm.regNumber} onChange={handleRegChange}
-                    InputProps={{ startAdornment: <InputAdornment position="start"><BadgeIcon sx={{ color: "#6C63FF" }} /></InputAdornment> }} />
+                    InputProps={{ startAdornment: <InputAdornment position="start"><BadgeIcon sx={{ color: "#E2672B" }} /></InputAdornment> }} />
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField fullWidth label="Contact Person" name="contactPerson" required
                     value={regForm.contactPerson} onChange={handleRegChange}
-                    InputProps={{ startAdornment: <InputAdornment position="start"><PersonIcon sx={{ color: "#6C63FF" }} /></InputAdornment> }} />
+                    InputProps={{ startAdornment: <InputAdornment position="start"><PersonIcon sx={{ color: "#E2672B" }} /></InputAdornment> }} />
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField fullWidth label="Phone Number" name="phone" required type="tel"
                     value={regForm.phone} onChange={handleRegChange}
-                    InputProps={{ startAdornment: <InputAdornment position="start"><PhoneIcon sx={{ color: "#6C63FF" }} /></InputAdornment> }} />
+                    InputProps={{ startAdornment: <InputAdornment position="start"><PhoneIcon sx={{ color: "#E2672B" }} /></InputAdornment> }} />
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField fullWidth label="Email Address" name="email" required type="email"
                     value={regForm.email} onChange={handleRegChange}
-                    InputProps={{ startAdornment: <InputAdornment position="start"><EmailIcon sx={{ color: "#6C63FF" }} /></InputAdornment> }} />
+                    InputProps={{ startAdornment: <InputAdornment position="start"><EmailIcon sx={{ color: "#E2672B" }} /></InputAdornment> }} />
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField fullWidth label="Address / Location" name="address" required
                     value={regForm.address} onChange={handleRegChange}
-                    InputProps={{ startAdornment: <InputAdornment position="start"><LocationIcon sx={{ color: "#6C63FF" }} /></InputAdornment> }} />
+                    InputProps={{ startAdornment: <InputAdornment position="start"><LocationIcon sx={{ color: "#E2672B" }} /></InputAdornment> }} />
                 </Grid>
                 <Grid item xs={12}>
                   <TextField fullWidth label="Description" name="description" multiline rows={3}
                     placeholder="Tell us about your organization..."
                     value={regForm.description} onChange={handleRegChange}
-                    InputProps={{ startAdornment: <InputAdornment position="start" sx={{ alignSelf: "flex-start", mt: 1 }}><DescIcon sx={{ color: "#6C63FF" }} /></InputAdornment> }} />
+                    InputProps={{ startAdornment: <InputAdornment position="start" sx={{ alignSelf: "flex-start", mt: 1 }}><DescIcon sx={{ color: "#E2672B" }} /></InputAdornment> }} />
                 </Grid>
               </Grid>
 
@@ -985,7 +985,7 @@ const CharityNetwork = () => {
                   <img src={regLogoPreview} alt="Logo" style={{ width: 80, height: 80, borderRadius: 18, objectFit: "cover" }} />
                 ) : (
                   <>
-                    <UploadIcon sx={{ fontSize: 32, color: "#6C63FF", mb: 1 }} />
+                    <UploadIcon sx={{ fontSize: 32, color: "#E2672B", mb: 1 }} />
                     <div style={{ fontWeight: 600, color: "#555" }}>Click to upload logo</div>
                   </>
                 )}
@@ -995,7 +995,7 @@ const CharityNetwork = () => {
               <div className="cn-reg-label" style={{ marginTop: 20 }}>Gallery Images</div>
               <div className="cn-reg-upload" onClick={() => galleryInputRef.current?.click()}>
                 <input ref={galleryInputRef} type="file" accept="image/*" multiple onChange={handleGalleryUpload} />
-                <UploadIcon sx={{ fontSize: 28, color: "#6C63FF" }} />
+                <UploadIcon sx={{ fontSize: 28, color: "#E2672B" }} />
                 <div style={{ fontWeight: 600, color: "#555", fontSize: "0.9rem" }}>
                   Upload gallery images (max 5)
                   {regGalleryPreviews.length > 0 && ` · ${regGalleryPreviews.length}/5 selected`}

@@ -1,9 +1,9 @@
 import * as React from 'react';
 import {
   AppBar, Box, Toolbar, IconButton, Typography, Container,
-  Button, Drawer, List, ListItem, ListItemText, 
+  Button, Drawer, List, ListItem, ListItemText,
 } from '@mui/material';
-import { Menu as MenuIcon, Adb as AdbIcon } from '@mui/icons-material';
+import { Menu as MenuIcon } from '@mui/icons-material';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import './Header.css';
@@ -29,37 +29,26 @@ function Header() {
 
   return (
     <>
-      <AppBar 
-        position="sticky" 
-        elevation={0} 
-        className="premium-navbar"
-      >
+      <AppBar position="sticky" elevation={0}>
         <Container maxWidth="xl">
           <Toolbar className="navbar-container">
             {/* Logo - Desktop & Mobile */}
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1, color: '#3b82f6' }} />
-              <Typography
-                variant="h6"
-                noWrap
-                component={Link}
-                to="/"
-                className="logo-text"
-                sx={{
-                  textDecoration: 'none',
-                  display: { xs: 'none', md: 'flex' },
-                }}
-              >
-                Share2serve
-              </Typography>
-            </Box>
+            <Typography
+              variant="h6"
+              noWrap
+              component={Link}
+              to="/"
+              className="logo-text"
+              sx={{ textDecoration: 'none', display: { xs: 'none', md: 'flex' } }}
+            >
+              Share<span className="logo-accent">2</span>serve
+            </Typography>
 
             {/* Mobile Menu Icon */}
             <IconButton
               size="large"
-              color="inherit"
               onClick={() => setOpenDrawer(true)}
-              sx={{ display: { xs: 'flex', md: 'none' }, color: 'white' }}
+              sx={{ display: { xs: 'flex', md: 'none' }, color: 'text.primary' }}
             >
               <MenuIcon />
             </IconButton>
@@ -70,14 +59,9 @@ function Header() {
               component={Link}
               to="/"
               className="logo-text"
-              sx={{
-                flexGrow: 1,
-                display: { xs: 'flex', md: 'none' },
-                justifyContent: 'center',
-                textDecoration: 'none',
-              }}
+              sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' }, justifyContent: 'center', textDecoration: 'none' }}
             >
-              Share2serve
+              Share<span className="logo-accent">2</span>serve
             </Typography>
 
             {/* Desktop Nav Links */}
@@ -96,23 +80,14 @@ function Header() {
                   <Typography className="user-name-display" sx={{ display: { xs: 'none', lg: 'block' } }}>
                     Welcome, <span>{user?.name?.split(' ')[0]}</span>
                   </Typography>
-                  <Button
-                    onClick={handleLogout}
-                    variant="text"
-                    className="logout-button"
-                  >
+                  <Button onClick={handleLogout} variant="text" color="inherit">
                     Logout
                   </Button>
                 </Box>
               ) : (
-                <Link to="/login" style={{ textDecoration: 'none' }}>
-                  <Button
-                    variant="contained"
-                    className="cta-button"
-                  >
-                    Get Started
-                  </Button>
-                </Link>
+                <Button component={Link} to="/login" variant="contained" color="primary">
+                  Get Started
+                </Button>
               )}
             </Box>
           </Toolbar>
@@ -124,57 +99,41 @@ function Header() {
         anchor="left"
         open={openDrawer}
         onClose={() => setOpenDrawer(false)}
-        PaperProps={{
-          className: "mobile-drawer-content"
-        }}
-        sx={{ 
-          display: { xs: 'block', md: 'none' },
-          '& .MuiDrawer-paper': { width: '100%', maxWidth: 300 }
-        }}
+        PaperProps={{ className: 'mobile-drawer-content' }}
+        sx={{ display: { xs: 'block', md: 'none' }, '& .MuiDrawer-paper': { width: '100%', maxWidth: 300 } }}
       >
         <Box sx={{ textAlign: 'center', mb: 4 }}>
-          <Typography className="logo-text" sx={{ mt: 4, mb: 4 }}>
-            Share2serve
+          <Typography className="logo-text" sx={{ mt: 4, mb: 4, justifyContent: 'center', display: 'flex' }}>
+            Share<span className="logo-accent">2</span>serve
           </Typography>
         </Box>
         <List>
           {pages.map((item) => (
             <ListItem
-              button
               key={item.label}
               component={Link}
               to={item.link}
               onClick={() => setOpenDrawer(false)}
               className="mobile-nav-link"
             >
-              <ListItemText 
-                primary={item.label} 
-                primaryTypographyProps={{ 
-                  style: { 
-                    fontWeight: 500, 
-                    fontSize: '1.2rem',
-                    textAlign: 'center'
-                  } 
-                }} 
+              <ListItemText
+                primary={item.label}
+                primaryTypographyProps={{ style: { fontWeight: 500, fontSize: '1.2rem', textAlign: 'center' } }}
               />
             </ListItem>
           ))}
           {/* Mobile auth action */}
           <Box sx={{ mt: 4, px: 4 }}>
             {token ? (
-              <Button
-                fullWidth
-                onClick={handleLogout}
-                className="logout-button"
-                sx={{ py: 1.5 }}
-              >
+              <Button fullWidth onClick={handleLogout} variant="outlined" color="primary" sx={{ py: 1.5 }}>
                 Logout
               </Button>
             ) : (
               <Button
                 fullWidth
                 onClick={() => { navigate('/login'); setOpenDrawer(false); }}
-                className="cta-button"
+                variant="contained"
+                color="primary"
                 sx={{ py: 1.5 }}
               >
                 Log In

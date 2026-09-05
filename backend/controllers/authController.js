@@ -1,33 +1,39 @@
+const crypto = require("crypto");
 const User = require("../models/User");
+const RefreshToken = require("../models/RefreshToken");
 const jwt = require("jsonwebtoken");
 
-// Helper: Generate JWT
-const generateToken = (user) =>
+const REFRESH_TOKEN_BYTES = 40;
+const REFRESH_TOKEN_EXPIRES_IN_DAYS = Number(process.env.JWT_REFRESH_EXPIRES_IN_DAYS) || 7;
+
+// Helper: Generate short-lived JWT access token
+const generateAccessToken = (user) =>
   jwt.sign(
     { id: user._id, name: user.name, email: user.email, role: user.role },
     process.env.JWT_SECRET,
-    { expiresIn: "7d" }
+    { expiresIn: process.env.JWT_ACCESS_EXPIRES_IN || "15m" }
   );
 
-// Helper: Email Validation
-const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+const hashToken = (token) => crypto.createHash("sha256").update(token).digest("hex");
+
+// Helper: Issue + persist an opaque refresh token, return the plaintext value
+const generateRefreshToken = async (userId) => {
+  const plainToken = crypto.randomBytes(REFRESH_TOKEN_BYTES).toString("hex");
+  const expiresAt = new Date(Date.now() + REFRESH_TOKEN_EXPIRES_IN_DAYS * 24 * 60 * 60 * 1000);
+
+  await RefreshToken.create({
+    user: userId,
+    tokenHash: hashToken(plainToken),
+    expiresAt,
+  });
+
+  return plainToken;
+};
 
 // ─── Signup ──────────────────────────────────────────────────────────────────
 const signup = async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
-
-    if (!name || !email || !password) {
-      return res.status(400).json({ success: false, message: "All fields are required" });
-    }
-
-    if (!isValidEmail(email)) {
-      return res.status(400).json({ success: false, message: "Please provide a valid email address" });
-    }
-
-    if (password.length < 6) {
-      return res.status(400).json({ success: false, message: "Password must be at least 6 characters" });
-    }
 
     const userExists = await User.findOne({ email: email.toLowerCase() });
     if (userExists) {
@@ -41,14 +47,18 @@ const signup = async (req, res, next) => {
       role: "user", // Default role
     });
 
-    if (user) {
-      res.status(201).json({
-        success: true,
-        message: "Account created successfully",
-        token: generateToken(user),
-        user: { id: user._id, name: user.name, email: user.email, role: user.role },
-      });
-    }
+    const [token, refreshToken] = await Promise.all([
+      generateAccessToken(user),
+      generateRefreshToken(user._id),
+    ]);
+
+    res.status(201).json({
+      success: true,
+      message: "Account created successfully",
+      token,
+      refreshToken,
+      user: { id: user._id, name: user.name, email: user.email, role: user.role },
+    });
   } catch (error) {
     next(error);
   }
@@ -59,21 +69,71 @@ const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    if (!email || !password) {
-      return res.status(400).json({ success: false, message: "Email and password are required" });
-    }
-
     const user = await User.findOne({ email: email.toLowerCase() }).select("+password");
     if (!user || !(await user.matchPassword(password))) {
       return res.status(401).json({ success: false, message: "Invalid email or password" });
     }
 
+    const [token, refreshToken] = await Promise.all([
+      generateAccessToken(user),
+      generateRefreshToken(user._id),
+    ]);
+
     res.status(200).json({
       success: true,
       message: "Login successful",
-      token: generateToken(user),
+      token,
+      refreshToken,
       user: { id: user._id, name: user.name, email: user.email, role: user.role },
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// ─── Refresh ─────────────────────────────────────────────────────────────────
+const refresh = async (req, res, next) => {
+  try {
+    const { refreshToken } = req.body;
+    const tokenHash = hashToken(refreshToken);
+
+    const stored = await RefreshToken.findOne({ tokenHash });
+    if (!stored || stored.expiresAt < new Date()) {
+      if (stored) await stored.deleteOne();
+      return res.status(401).json({ success: false, message: "Refresh token invalid or expired" });
+    }
+
+    const user = await User.findById(stored.user);
+    if (!user) {
+      await stored.deleteOne();
+      return res.status(401).json({ success: false, message: "Refresh token invalid or expired" });
+    }
+
+    // Rotate: delete the used token, issue a fresh pair
+    await stored.deleteOne();
+    const [newToken, newRefreshToken] = await Promise.all([
+      generateAccessToken(user),
+      generateRefreshToken(user._id),
+    ]);
+
+    res.status(200).json({
+      success: true,
+      token: newToken,
+      refreshToken: newRefreshToken,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// ─── Logout ──────────────────────────────────────────────────────────────────
+const logout = async (req, res, next) => {
+  try {
+    const { refreshToken } = req.body;
+    if (refreshToken) {
+      await RefreshToken.deleteOne({ tokenHash: hashToken(refreshToken) });
+    }
+    res.status(200).json({ success: true, message: "Logged out" });
   } catch (error) {
     next(error);
   }
@@ -93,4 +153,4 @@ const getMe = async (req, res, next) => {
   }
 };
 
-module.exports = { signup, login, getMe };
+module.exports = { signup, login, refresh, logout, getMe };

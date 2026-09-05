@@ -1,4 +1,11 @@
 const Charity = require("../models/Charity");
+const { getPagination, buildPaginationMeta } = require("../utils/pagination");
+
+const SORT_OPTIONS = {
+  rating: { rating: -1 },
+  newest: { yearEstablished: -1 },
+  mostHelped: { peopleHelped: -1 },
+};
 
 // @desc    Get all charities
 // @route   GET /api/charities
@@ -6,27 +13,25 @@ const Charity = require("../models/Charity");
 const getCharities = async (req, res, next) => {
   try {
     const { category, sortBy } = req.query;
-    let query = { status: "Active" };
+    const query = { status: "Active" };
 
     if (category) {
       query.category = category;
     }
 
-    let charities = await Charity.find(query);
+    const sort = SORT_OPTIONS[sortBy] || { createdAt: -1 };
+    const { page, limit, skip } = getPagination(req.query);
 
-    // Sorting options
-    if (sortBy === "rating") {
-      charities.sort((a, b) => b.rating - a.rating);
-    } else if (sortBy === "newest") {
-      charities.sort((a, b) => b.yearEstablished - a.yearEstablished);
-    } else if (sortBy === "mostHelped") {
-      charities.sort((a, b) => b.peopleHelped - a.peopleHelped);
-    }
+    const [charities, total] = await Promise.all([
+      Charity.find(query).sort(sort).skip(skip).limit(limit),
+      Charity.countDocuments(query),
+    ]);
 
     res.status(200).json({
       success: true,
       count: charities.length,
       data: charities,
+      pagination: buildPaginationMeta(page, limit, total),
     });
   } catch (error) {
     next(error);

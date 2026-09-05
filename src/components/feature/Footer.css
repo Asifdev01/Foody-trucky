@@ -1,8 +1,7 @@
 :root {
-  --footer-bg: #0a0f1e;
+  --footer-bg: #241F1B;
   --footer-text: rgba(255, 255, 255, 0.7);
-  --accent-glow: #3b82f6;
-  --accent-purple: #8b5cf6;
+  --accent-orange: #E2672B;
   --glass-border: rgba(255, 255, 255, 0.1);
 }
 
@@ -10,22 +9,9 @@
   background: var(--footer-bg) !important;
   color: var(--footer-text) !important;
   padding: 5rem 2rem 2rem !important;
-  border-top: 1px solid var(--glass-border);
+  border-top: 4px solid var(--accent-orange);
   position: relative;
   overflow: hidden;
-  font-family: 'Inter', sans-serif !important;
-}
-
-.premium-footer::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--accent-glow), transparent);
-  box-shadow: 0 0 20px var(--accent-glow);
 }
 
 .footer-grid {
@@ -37,8 +23,9 @@
 }
 
 .footer-branding .footer-logo {
-  font-family: 'Kaushan Script', cursive !important;
-  font-size: 2rem !important;
+  font-family: 'Outfit', sans-serif !important;
+  font-weight: 800 !important;
+  font-size: 1.5rem !important;
   color: white !important;
   margin-bottom: 1rem;
   display: block;
@@ -67,11 +54,11 @@
   text-decoration: none !important;
   margin-bottom: 0.8rem;
   font-size: 0.9rem;
-  transition: all 0.3s ease !important;
+  transition: all var(--motion-base) var(--ease-standard) !important;
 }
 
 .footer-link:hover {
-  color: var(--accent-glow) !important;
+  color: var(--accent-orange) !important;
   transform: translateX(5px);
 }
 
@@ -83,7 +70,7 @@
 
 .social-icon-wrapper {
   color: var(--footer-text) !important;
-  transition: all 0.3s ease !important;
+  transition: all var(--motion-base) var(--ease-standard) !important;
   display: flex !important;
   align-items: center;
   justify-content: center;
@@ -96,10 +83,9 @@
 
 .social-icon-wrapper:hover {
   color: white !important;
-  background: var(--accent-glow);
-  box-shadow: 0 0 20px var(--accent-glow);
-  border-color: var(--accent-glow);
-  transform: translateY(-5px);
+  background: var(--accent-orange);
+  border-color: var(--accent-orange);
+  transform: translateY(-4px);
 }
 
 .footer-bottom {

@@ -503,7 +503,7 @@ const Donate = () => {
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <PersonIcon sx={{ color: "#6C63FF" }} />
+                        <PersonIcon sx={{ color: "#E2672B" }} />
                       </InputAdornment>
                     ),
                   }}
@@ -522,7 +522,7 @@ const Donate = () => {
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <PhoneIcon sx={{ color: "#6C63FF" }} />
+                        <PhoneIcon sx={{ color: "#E2672B" }} />
                       </InputAdornment>
                     ),
                   }}
@@ -541,7 +541,7 @@ const Donate = () => {
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <EmailIcon sx={{ color: "#6C63FF" }} />
+                        <EmailIcon sx={{ color: "#E2672B" }} />
                       </InputAdornment>
                     ),
                   }}
@@ -586,7 +586,7 @@ const Donate = () => {
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <RestaurantIcon sx={{ color: "#6C63FF" }} />
+                        <RestaurantIcon sx={{ color: "#E2672B" }} />
                       </InputAdornment>
                     ),
                   }}
@@ -606,7 +606,7 @@ const Donate = () => {
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <PeopleIcon sx={{ color: "#6C63FF" }} />
+                        <PeopleIcon sx={{ color: "#E2672B" }} />
                       </InputAdornment>
                     ),
                   }}
@@ -629,7 +629,7 @@ const Donate = () => {
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <LocationIcon sx={{ color: "#6C63FF" }} />
+                        <LocationIcon sx={{ color: "#E2672B" }} />
                       </InputAdornment>
                     ),
                   }}
@@ -647,7 +647,7 @@ const Donate = () => {
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <TimeIcon sx={{ color: "#6C63FF" }} />
+                        <TimeIcon sx={{ color: "#E2672B" }} />
                       </InputAdornment>
                     ),
                   }}
@@ -666,7 +666,7 @@ const Donate = () => {
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start" sx={{ alignSelf: "flex-start", mt: 1 }}>
-                        <NotesIcon sx={{ color: "#6C63FF" }} />
+                        <NotesIcon sx={{ color: "#E2672B" }} />
                       </InputAdornment>
                     ),
                   }}
@@ -758,7 +758,7 @@ const Donate = () => {
         <section className="donations-section">
           <div className="donations-header">
             <h2>
-              <InventoryIcon sx={{ color: "#6C63FF", fontSize: 32 }} />
+              <InventoryIcon sx={{ color: "#E2672B", fontSize: 32 }} />
               All Donations
               <span className="count-badge">{donations.length}</span>
             </h2>

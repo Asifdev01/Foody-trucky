@@ -61,9 +61,12 @@ const AppDrawer = ({ HomeMenuItems }) => {
             onClick={() => handleButtonClick(text, path)}
             sx={{
               "&.Mui-selected": {
-                backgroundColor: "#87A920",
+                backgroundColor: "primary.main",
                 color: "#fff",
                 "& .MuiListItemIcon-root": { color: "#fff" },
+              },
+              "&.Mui-selected:hover": {
+                backgroundColor: "primary.dark",
               },
             }}
           >
@@ -107,32 +110,21 @@ const AppDrawer = ({ HomeMenuItems }) => {
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               {token ? (
                 <>
-                  <Typography sx={{ fontSize: "0.9rem", color: "#555" }}>
+                  <Typography sx={{ fontSize: "0.9rem", color: "text.secondary" }}>
                     Hi, {user?.name?.split(" ")[0]}
                   </Typography>
                   <Button
                     variant="outlined"
                     size="small"
+                    color="primary"
                     onClick={handleLogout}
-                    sx={{
-                      borderColor: "#87A920",
-                      color: "#87A920",
-                      "&:hover": { backgroundColor: "#87A920", color: "white" },
-                    }}
                   >
                     Logout
                   </Button>
                 </>
               ) : (
                 <Link to="/login" style={{ textDecoration: "none" }}>
-                  <Button
-                    variant="contained"
-                    size="small"
-                    sx={{
-                      backgroundColor: "#87A920",
-                      "&:hover": { backgroundColor: "#6e8f1a" },
-                    }}
-                  >
+                  <Button variant="contained" size="small" color="primary">
                     Login
                   </Button>
                 </Link>

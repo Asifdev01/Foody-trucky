@@ -1,13 +1,16 @@
 const express = require("express");
 const router = express.Router();
-const { 
+const {
   getAvailableFoodDonations,
-  getFoodDonations, 
-  createFoodDonation, 
-  updateFoodDonation, 
-  deleteFoodDonation 
+  getFoodDonations,
+  createFoodDonation,
+  updateFoodDonation,
+  deleteFoodDonation
 } = require("../controllers/foodDonationController");
 const { protect, adminOnly } = require("../middleware/authMiddleware");
+const validate = require("../middleware/validate");
+const { createFoodDonationValidators, updateFoodDonationValidators } = require("../validators/foodDonationValidators");
+const { foodDonationCreateLimiter } = require("../middleware/rateLimiters");
 
 // Public route - get available food donations
 router.get("/available", getAvailableFoodDonations);
@@ -18,10 +21,10 @@ router.use(adminOnly);
 
 router.route("/")
   .get(getFoodDonations)
-  .post(createFoodDonation);
+  .post(foodDonationCreateLimiter, validate(createFoodDonationValidators), createFoodDonation);
 
 router.route("/:id")
-  .put(updateFoodDonation)
+  .put(validate(updateFoodDonationValidators), updateFoodDonation)
   .delete(deleteFoodDonation);
 
 module.exports = router;

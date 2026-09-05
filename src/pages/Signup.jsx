@@ -1,12 +1,20 @@
 import React, { useState } from "react";
-import { Container, Grid, TextField, Button, Box, Typography, Alert, CircularProgress } from "@mui/material";
+import { Grid, TextField, Button, Box, Typography, Alert, CircularProgress, Divider } from "@mui/material";
 import GoogleIcon from '@mui/icons-material/Google';
 import AppleIcon from '@mui/icons-material/Apple';
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { apiFetch } from "../api/client";
+
+const isValidEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+// Mirrors the backend's actual password policy (authValidators.js): min 6 chars,
+// at least one letter and one number — shown here so users get the real rule,
+// not a stricter or looser one that would just surface as a server error later.
+const isValidPassword = (value) => value.length >= 6 && /[A-Za-z]/.test(value) && /[0-9]/.test(value);
 
 const Signup = () => {
   const [formData, setFormData] = useState({ name: "", email: "", password: "" });
+  const [touched, setTouched] = useState({});
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -17,15 +25,27 @@ const Signup = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleBlur = (field) => setTouched((t) => ({ ...t, [field]: true }));
+
+  const errors = {
+    name: touched.name && !formData.name.trim() ? "Please enter your name" : "",
+    email: touched.email && !isValidEmail(formData.email) ? "Enter a valid email address" : "",
+    password: touched.password && !isValidPassword(formData.password)
+      ? "At least 6 characters, with a letter and a number"
+      : "",
+  };
+
   const handleSignup = async (e) => {
     e.preventDefault();
+    setTouched({ name: true, email: true, password: true });
     setError("");
-    setLoading(true);
 
+    if (!formData.name.trim() || !isValidEmail(formData.email) || !isValidPassword(formData.password)) return;
+
+    setLoading(true);
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/auth/signup`, {
+      const response = await apiFetch("/api/auth/signup", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
@@ -35,7 +55,7 @@ const Signup = () => {
         throw new Error(data.message || "Signup failed");
       }
 
-      login(data.user, data.token);
+      login(data.user, data.token, data.refreshToken);
       navigate("/");
     } catch (err) {
       setError(err.message);
@@ -45,82 +65,108 @@ const Signup = () => {
   };
 
   return (
-    <Container maxWidth={false} disableGutters sx={{ height: "100vh", display: "flex" }}>
-      <Grid container sx={{ flex: 1 }}>
-        <Grid item xs={12} md={6} sx={{ display: { xs: "none", md: "flex" }, alignItems: "center", justifyContent: "center", backgroundImage: "url(/food3.jpg)", backgroundSize: "cover", backgroundPosition: "center" }}></Grid>
-
-        <Grid item xs={12} md={6} sx={{ display: "flex", alignItems: "center", justifyContent: "center", padding: 3 }}>
-          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: 360 }}>
-            <Typography variant="h6" component="a" href="/" sx={{ mb: 4, fontFamily: "Kaushan Script, serif", fontWeight: 500, fontSize: '3rem', color: 'black', textDecoration: 'none' }}>
-              Share2serve
-            </Typography>
-
-            <Typography variant="h4" gutterBottom>Create an account</Typography>
-
-            {error && <Alert severity="error" sx={{ width: '100%', mb: 2 }}>{error}</Alert>}
-
-            <form onSubmit={handleSignup} style={{ width: '100%' }}>
-              <TextField 
-                name="name"
-                label="Full name" 
-                fullWidth 
-                margin="normal" 
-                value={formData.name} 
-                onChange={handleChange} 
-                required 
-              />
-              <TextField 
-                name="email"
-                label="Email" 
-                fullWidth 
-                margin="normal" 
-                value={formData.email} 
-                onChange={handleChange} 
-                required 
-              />
-              <TextField 
-                name="password"
-                label="Password" 
-                type="password" 
-                fullWidth 
-                margin="normal" 
-                value={formData.password} 
-                onChange={handleChange} 
-                required 
-              />
-              
-              <Button 
-                type="submit" 
-                variant="contained" 
-                fullWidth 
-                disabled={loading}
-                sx={{ mt: 4, bgcolor: "#87A920", padding: "10px 20px", "&:hover": { bgcolor: "#6e8f1a" } }}
-              >
-                {loading ? <CircularProgress size={24} color="inherit" /> : "Sign up"}
-              </Button>
-            </form>
-
-            <Box sx={{ mt: 3, textAlign: "center" }}>
-              <Typography variant="body2">
-                Already have an account? 
-                <Link style={{ textDecoration: "none", marginLeft: '5px', color: '#87A920' }} to="/login">Login</Link>
-              </Typography>
-            </Box>
-
-            <Typography sx={{ mt: 3, fontSize: "0.8rem", opacity: "0.5" }}>or Sign up with</Typography>
-
-            <Box sx={{ mt: 2, display: "flex", gap: 2 }}>
-              <Button variant="outlined" sx={{ borderRadius: "20px", color: "black", borderColor: "#87A920" }}>
-                <GoogleIcon />
-              </Button>
-              <Button variant="outlined" sx={{ borderRadius: "20px", color: "black", borderColor: "#87A920" }}>
-                <AppleIcon />
-              </Button>
-            </Box>
-          </Box>
-        </Grid>
+    <Grid container sx={{ minHeight: "calc(100vh - 64px)" }}>
+      {/* Illustrative panel */}
+      <Grid
+        item xs={12} md={6}
+        sx={{
+          display: { xs: "none", md: "flex" },
+          alignItems: "flex-end",
+          position: "relative",
+          backgroundImage: "url(/food3.jpg)",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          p: 6,
+        }}
+      >
+        <Box sx={{
+          position: "absolute", inset: 0,
+          background: "linear-gradient(to top, rgba(36,31,27,0.75), rgba(36,31,27,0.05))",
+        }} />
+        <Box sx={{ position: "relative", color: "#fff" }}>
+          <Typography variant="h4" sx={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, mb: 1 }}>
+            Join a network already feeding thousands.
+          </Typography>
+          <Typography sx={{ opacity: 0.85 }}>
+            Sign up in under a minute — no paperwork, just impact.
+          </Typography>
+        </Box>
       </Grid>
-    </Container>
+
+      {/* Form panel */}
+      <Grid item xs={12} md={6} sx={{ display: "flex", alignItems: "center", justifyContent: "center", p: 3 }}>
+        <Box sx={{ width: "100%", maxWidth: 380 }}>
+          <Typography
+            component={Link} to="/"
+            sx={{
+              display: "block", mb: 4, fontFamily: "'Outfit', sans-serif", fontWeight: 800,
+              fontSize: "1.75rem", color: "text.primary", textDecoration: "none",
+            }}
+          >
+            Share<span style={{ color: "#E2672B" }}>2</span>serve
+          </Typography>
+
+          <Typography variant="h4" gutterBottom sx={{ fontWeight: 700 }}>Create an account</Typography>
+          <Typography sx={{ color: "text.secondary", mb: 3 }}>Start donating or receiving food in minutes.</Typography>
+
+          {error && (
+            <Alert severity="error" variant="filled" sx={{ mb: 2 }}>
+              {error}
+            </Alert>
+          )}
+
+          <form onSubmit={handleSignup} noValidate>
+            <TextField
+              name="name" label="Full name" fullWidth margin="normal"
+              value={formData.name} onChange={handleChange}
+              onBlur={() => handleBlur("name")}
+              error={!!errors.name} helperText={errors.name}
+            />
+            <TextField
+              name="email" label="Email" fullWidth margin="normal"
+              value={formData.email} onChange={handleChange}
+              onBlur={() => handleBlur("email")}
+              error={!!errors.email} helperText={errors.email}
+            />
+            <TextField
+              name="password" label="Password" type="password" fullWidth margin="normal"
+              value={formData.password} onChange={handleChange}
+              onBlur={() => handleBlur("password")}
+              error={!!errors.password}
+              helperText={errors.password || "At least 6 characters, with a letter and a number"}
+            />
+
+            <Button
+              type="submit" variant="contained" color="primary" fullWidth
+              disabled={loading}
+              sx={{ mt: 3, py: 1.3 }}
+            >
+              {loading ? <CircularProgress size={24} color="inherit" /> : "Sign up"}
+            </Button>
+          </form>
+
+          <Box sx={{ mt: 3, textAlign: "center" }}>
+            <Typography variant="body2" color="text.secondary">
+              Already have an account?{" "}
+              <Link style={{ color: "#E2672B", fontWeight: 600 }} to="/login">Login</Link>
+            </Typography>
+          </Box>
+
+          <Divider sx={{ my: 3 }}>
+            <Typography variant="caption" color="text.secondary">or continue with</Typography>
+          </Divider>
+
+          <Box sx={{ display: "flex", gap: 1.5 }}>
+            <Button fullWidth variant="outlined" color="inherit" startIcon={<GoogleIcon />} sx={{ borderColor: "divider" }}>
+              Google
+            </Button>
+            <Button fullWidth variant="outlined" color="inherit" startIcon={<AppleIcon />} sx={{ borderColor: "divider" }}>
+              Apple
+            </Button>
+          </Box>
+        </Box>
+      </Grid>
+    </Grid>
   );
 };
 

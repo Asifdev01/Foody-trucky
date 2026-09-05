@@ -31,8 +31,7 @@ import {
   Twitter as TwitterIcon,
   Instagram as InstagramIcon,
 } from "@mui/icons-material";
-
-const API_URL = import.meta.env.VITE_API_URL;
+import { apiFetch } from "../api/client";
 
 const Charity = () => {
   const [charities, setCharities] = useState([]);
@@ -60,12 +59,12 @@ const Charity = () => {
   const fetchCharities = async () => {
     try {
       setLoading(true);
-      let url = `${API_URL}/api/charities?`;
+      let url = "/api/charities?";
 
       if (category) url += `category=${category}&`;
       if (sortBy) url += `sortBy=${sortBy}`;
 
-      const response = await fetch(url);
+      const response = await apiFetch(url);
       if (!response.ok) throw new Error("Failed to fetch charities");
 
       const data = await response.json();
@@ -81,7 +80,7 @@ const Charity = () => {
   const fetchFoodDonations = async () => {
     try {
       setLoadingDonations(true);
-      const response = await fetch(`${API_URL}/api/food-donations/available`);
+      const response = await apiFetch("/api/food-donations/available");
       if (!response.ok) throw new Error("Failed to fetch food donations");
 
       const data = await response.json();
@@ -124,13 +123,8 @@ const Charity = () => {
   const handleSaveEdit = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem("token");
-      const response = await fetch(`${API_URL}/api/charities/${editForm._id}`, {
+      const response = await apiFetch(`/api/charities/${editForm._id}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
         body: JSON.stringify(editForm),
       });
 
@@ -154,12 +148,8 @@ const Charity = () => {
 
     try {
       setLoading(true);
-      const token = localStorage.getItem("token");
-      const response = await fetch(`${API_URL}/api/charities/${charityId}`, {
+      const response = await apiFetch(`/api/charities/${charityId}`, {
         method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
       });
 
       if (!response.ok) throw new Error("Failed to delete charity");
