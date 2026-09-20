@@ -8,13 +8,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import './Header.css';
 
-const pages = [
+const basePages = [
   { label: 'Home', link: '/' },
-  { label: 'Donate Food', link: '/donate' },
-  { label: 'Charities', link: '/charities' },
   { label: 'About us', link: '/#about-us' },
   { label: 'Contact', link: '/contact' },
-  { label: 'Admin', link: '/admin/dashboard' },
 ];
 
 function Header() {
@@ -26,6 +23,14 @@ function Header() {
     logout();
     navigate('/login');
   };
+
+  // Each role only sees the nav link for the section it's allowed into.
+  const roleLinks = [];
+  if (user?.role === 'donor') roleLinks.push({ label: 'Donate Food', link: '/donate' });
+  if (user?.role === 'charity') roleLinks.push({ label: 'Charities', link: '/charities' });
+  if (user?.role === 'admin') roleLinks.push({ label: 'Admin', link: '/admin/dashboard' });
+
+  const pages = [...basePages.slice(0, 1), ...roleLinks, ...basePages.slice(1)];
 
   return (
     <>

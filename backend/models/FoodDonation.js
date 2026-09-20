@@ -2,6 +2,16 @@ const mongoose = require("mongoose");
 
 const foodDonationSchema = new mongoose.Schema(
   {
+    donor: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    charity: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
     donorName: {
       type: String,
       required: [true, "Please add donor name"],
@@ -11,10 +21,24 @@ const foodDonationSchema = new mongoose.Schema(
       required: [true, "Please add donor email"],
       match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Please add a valid email"],
     },
+    donorPhone: {
+      type: String,
+      default: "",
+    },
+    foodName: {
+      type: String,
+      default: "",
+    },
+    dietaryType: {
+      type: String,
+      enum: ["Vegetarian", "Non-Vegetarian", "Both"],
+      default: "Vegetarian",
+    },
     foodType: {
       type: String,
       required: [true, "Please specify food type"],
       enum: ["Fruits", "Vegetables", "Grains", "Dairy", "Meat", "Bakery", "Cooked Food", "Other"],
+      default: "Other",
     },
     quantity: {
       type: Number,
@@ -30,6 +54,22 @@ const foodDonationSchema = new mongoose.Schema(
     description: {
       type: String,
       default: "",
+    },
+    address: {
+      type: String,
+      default: "",
+    },
+    timeSlot: {
+      type: Date,
+      default: null,
+    },
+    images: {
+      type: [String],
+      default: [],
+      validate: {
+        validator: (arr) => arr.length <= 5,
+        message: "A maximum of 5 images is allowed",
+      },
     },
     donationDate: {
       type: Date,

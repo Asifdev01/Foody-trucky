@@ -33,7 +33,7 @@ const generateRefreshToken = async (userId) => {
 // ─── Signup ──────────────────────────────────────────────────────────────────
 const signup = async (req, res, next) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, role } = req.body;
 
     const userExists = await User.findOne({ email: email.toLowerCase() });
     if (userExists) {
@@ -44,7 +44,7 @@ const signup = async (req, res, next) => {
       name,
       email: email.toLowerCase(),
       password,
-      role: "user", // Default role
+      role: role === "charity" ? "charity" : "donor", // admin accounts are seeded, never self-registered
     });
 
     const [token, refreshToken] = await Promise.all([

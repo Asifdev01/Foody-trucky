@@ -26,16 +26,18 @@ const createUser = async (role) => {
 };
 
 const validDonationPayload = {
-  donorName: "Green Grocers",
-  donorEmail: "grocer@example.com",
+  foodName: "Fresh Vegetables",
+  dietaryType: "Vegetarian",
   foodType: "Vegetables",
   quantity: 5,
   unit: "kg",
+  donorPhone: "9876543210",
+  address: "123 Green Grocers Lane",
 };
 
 describe("RBAC on admin-only routes", () => {
-  it("rejects a non-admin user with 403", async () => {
-    const { token } = await createUser("user");
+  it("rejects a charity account (cannot create donations) with 403", async () => {
+    const { token } = await createUser("charity");
     const res = await request(app)
       .post("/api/food-donations")
       .set("Authorization", `Bearer ${token}`)

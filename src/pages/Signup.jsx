@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Grid, TextField, Button, Box, Typography, Alert, CircularProgress, Divider } from "@mui/material";
+import { Grid, TextField, Button, Box, Typography, Alert, CircularProgress, Divider, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import GoogleIcon from '@mui/icons-material/Google';
 import AppleIcon from '@mui/icons-material/Apple';
 import { Link, useNavigate } from "react-router-dom";
@@ -13,7 +13,7 @@ const isValidEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 const isValidPassword = (value) => value.length >= 6 && /[A-Za-z]/.test(value) && /[0-9]/.test(value);
 
 const Signup = () => {
-  const [formData, setFormData] = useState({ name: "", email: "", password: "" });
+  const [formData, setFormData] = useState({ name: "", email: "", password: "", role: "donor" });
   const [touched, setTouched] = useState({});
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -116,6 +116,18 @@ const Signup = () => {
           )}
 
           <form onSubmit={handleSignup} noValidate>
+            <Typography variant="body2" sx={{ mt: 1, mb: 1, fontWeight: 600 }}>I am signing up as a</Typography>
+            <ToggleButtonGroup
+              value={formData.role}
+              exclusive
+              fullWidth
+              onChange={(e, value) => value && setFormData((prev) => ({ ...prev, role: value }))}
+              sx={{ mb: 2 }}
+            >
+              <ToggleButton value="donor">Food Donor</ToggleButton>
+              <ToggleButton value="charity">Charity</ToggleButton>
+            </ToggleButtonGroup>
+
             <TextField
               name="name" label="Full name" fullWidth margin="normal"
               value={formData.name} onChange={handleChange}

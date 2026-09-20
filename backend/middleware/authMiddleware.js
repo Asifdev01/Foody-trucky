@@ -37,4 +37,15 @@ const adminOnly = (req, res, next) => {
   }
 };
 
-module.exports = { protect, adminOnly };
+/**
+ * Middleware factory to restrict access to specific roles
+ */
+const authorize = (...roles) => (req, res, next) => {
+  if (req.user && roles.includes(req.user.role)) {
+    next();
+  } else {
+    res.status(403).json({ success: false, message: "Access denied: insufficient permissions" });
+  }
+};
+
+module.exports = { protect, adminOnly, authorize };

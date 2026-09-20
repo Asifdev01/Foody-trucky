@@ -7,13 +7,14 @@ import Header from "./components/feature/Header";
 import Footer from "./components/feature/Footer";
 import AppDrawer from "./components/feature/AppDrawer";
 import AdminRoute from "./components/AdminRoute";
+import RoleRoute from "./components/RoleRoute";
 
 // Pages
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Donate from "./pages/Donate";
-import CharityNetwork from "./pages/CharityNetwork";
+import CharityDashboard from "./pages/CharityDashboard";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -24,6 +25,8 @@ import Donor from "./pages/admin/Donor";
 import FoodDonor from "./pages/admin/FoodDonor";
 import Request from "./pages/admin/Request";
 import PartnerList from "./pages/admin/PartnerList";
+import Notifications from "./pages/admin/Notifications";
+import Settings from "./pages/admin/Settings";
 
 const LayoutWithHeader = () => {
   return (
@@ -56,8 +59,14 @@ const AppRoutes = () => {
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/donate" element={<Donate />} />
-          <Route path="/charities" element={<CharityNetwork />} />
+
+          {/* Donating is donor-only; the charity dashboard is charity-only */}
+          <Route element={<RoleRoute roles={["donor"]} />}>
+            <Route path="/donate" element={<Donate />} />
+          </Route>
+          <Route element={<RoleRoute roles={["charity"]} />}>
+            <Route path="/charities" element={<CharityDashboard />} />
+          </Route>
         </Route>
 
         <Route path="/login" element={<Login />} />
@@ -71,6 +80,8 @@ const AppRoutes = () => {
             <Route path="fooddonor" element={<FoodDonor />} />
             <Route path="request" element={<Request />} />
             <Route path="partnerlist" element={<PartnerList />} />
+            <Route path="notifications" element={<Notifications />} />
+            <Route path="settings" element={<Settings />} />
           </Route>
         </Route>
 

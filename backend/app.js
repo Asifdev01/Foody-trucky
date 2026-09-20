@@ -20,7 +20,7 @@ app.use(
     credentials: true,
   })
 );
-app.use(express.json());
+app.use(express.json({ limit: "12mb" })); // accommodates base64 food-donation photos
 app.use(mongoSanitize());
 
 // Rate limiting (auth/food-donation-specific limiters are applied in their routers)

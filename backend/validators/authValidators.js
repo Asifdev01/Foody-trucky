@@ -10,6 +10,11 @@ const signupValidators = [
     .withMessage("Password must contain at least one letter")
     .matches(/[0-9]/)
     .withMessage("Password must contain at least one number"),
+  body("role")
+    .optional()
+    .trim()
+    .isIn(["donor", "charity"])
+    .withMessage("Role must be either 'donor' or 'charity'"),
 ];
 
 const loginValidators = [

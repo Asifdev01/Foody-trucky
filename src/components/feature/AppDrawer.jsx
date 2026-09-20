@@ -38,8 +38,8 @@ const AppDrawer = ({ HomeMenuItems }) => {
     { text: "Food Donated", icon: <VolunteerActivismIcon />, path: "/admin/fooddonor" },
     { text: "Requests", icon: <PlaylistAddIcon />, path: "/admin/request" },
     { text: "Partners", icon: <ApartmentIcon />, path: "/admin/partnerlist" },
-    { text: "Notifications", icon: <Notifications />, path: "/notifications" },
-    { text: "Settings", icon: <Settings />, path: "/settings" },
+    { text: "Notifications", icon: <Notifications />, path: "/admin/notifications" },
+    { text: "Settings", icon: <Settings />, path: "/admin/settings" },
   ];
 
   const menuItems = HomeMenuItems || AdminMenuItems;
